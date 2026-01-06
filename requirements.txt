@@ -1,0 +1,28 @@
+# Core data & EDA
+pandas
+numpy
+matplotlib
+seaborn
+
+# NLP & embeddings
+sentence-transformers
+torch
+
+# Vector database
+chromadb
+
+# RAG / LLM orchestration
+langchain
+transformers
+accelerate
+
+# App / UI
+gradio
+streamlit
+
+# Testing
+pytest
+
+# Utilities
+tqdm
+python-dotenv
