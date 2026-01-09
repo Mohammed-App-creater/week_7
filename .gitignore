@@ -68,8 +68,12 @@ venv.bak/
 *.swo
 
 # Project Specific - Data
+data/*.csv
 data/raw/
 data/processed/
+
+# Vector Store
+vector_store/*
 
 # Project Specific - MLflow
 mlruns/
