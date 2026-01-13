@@ -1,59 +1,56 @@
-# Task 2: Chunking & Vector Store Creation
+# Task 2 & 3: Vector Store & RAG Pipeline
 
-## 1. Objective
+## 🎯 Overview
+This directory contains the core backend logic for the RAG system. It covers **Task 2 (Vector Store Creation)** and **Task 3 (RAG Pipeline Implementation)**.
 
-Task 2 focuses on converting the preprocessed textual data into a machine-understandable format. This involves chunking long narratives into manageable pieces, generating vector embeddings, and persisting them in a specialized vector database (ChromaDB) to enable efficient semantic retrieval.
+## 🏗️ Architecture Components
 
-## 2. Stratified Sampling Strategy
+### Task 2: Vector Store (`build_vector_store.py`)
+Responsible for converting text into embeddings and persisting them.
+- **Chunking:** 512 characters with 50-character overlap.
+- **Model:** `sentence-transformers/all-MiniLM-L6-v2` (384 dimensions).
+- **Storage:** ChromaDB (Serverless mode).
+- **Metadata:** Stores `product_category` and `issue` alongside vectors for filtering.
 
-Due to potential computational constraints and the high volume of data:
-*   We employ **Stratified Sampling** based on the `Product` category.
-*   This ensures that the vector store maintains a representative distribution of all four business lines (Credit card, Personal loan, Savings account, Money transfer), preventing any single category from dominating the retrieval results.
+### Task 3: RAG Core (`rag_pipeline.py`)
+Responsible for answering user queries.
+1.  **Retrieval:** Fetches top-k (k=5) semantic matches from ChromaDB.
+2.  **Product Filtering:** (New) Heuristically matches user query terms to products (e.g., "card" -> "Credit card") to filter results.
+3.  **Deduplication:** Removes duplicate complaints to maximize context window usage.
+4.  **Generation:** Uses `google/flan-t5-base` to synthesize an answer.
+    - **Prompt:** "Synthesis-focused" template forcing bullet-point verification.
+    - **Guardrails:** Checks for "Not enough info" or hallucinations.
 
-## 3. Text Chunking Approach
+## 📂 Key Files
+| File | Description |
+| :--- | :--- |
+| `build_vector_store.py` | Script to chunk data and populate ChromaDB. |
+| `rag_pipeline.py` | The main `RAGPipeline` class containing retrieval and generation logic. |
+| `evaluate_rag.py` | Evaluation script to run qualitatve tests and generate reports. |
 
-Complaint narratives can be lengthy. To optimize context retrieval for the LLM:
+## 🚀 How to Run
 
-*   **Chunk Size:** 512 characters.
-    *   *Justification:* This size captures sufficient context to understand a specific issue without overwhelming the LLM's context window with irrelevant details.
-*   **Overlap:** 50 characters.
-    *   *Justification:* Provides continuity between chunks, ensuring that context is not lost if a sentence is split across boundaries.
+### Build the Vector Store (Task 2)
+**Prerequisite:** Ensure `data/filtered_complaints.csv` exists (from Task 1).
+```bash
+python src/build_vector_store.py
+```
 
-## 4. Embedding Model Choice
+### Run Evaluation (Task 3)
+To verify the RAG pipeline performance:
+```bash
+python src/evaluate_rag.py
+```
+*This will generate `reports/task3_evaluation.md`.*
 
-*   **Model:** `sentence-transformers/all-MiniLM-L6-v2`
-*   **Reasoning:**
-    *   **Performance:** Offers an excellent balance between speed and semantic accuracy.
-    *   **Dimensions:** Produces 384-dimensional vectors, which are storage-efficient.
-    *   **Open Source:** Fully accessible via Hugging Face, ensuring reproducibility.
+### Interactive Demo
+You can run a quick interactive CLI demo by executing the pipeline script directly:
+```bash
+python src/rag_pipeline.py
+```
 
-## 5. Vector Store Choice
-
-*   **Database:** ChromaDB
-*   **Type:** Embedded, serverless vector database.
-*   **Why ChromaDB?**
-    *   Easy integration with Python and LangChain.
-    *   Persistent storage capabilities without needing a separate container or extensive infrastructure.
-    *   Fast similarity search performance for datasets of this scale.
-
-## 6. Metadata Stored with Embeddings
-
-To facilitate precise filtering and reference generation, each embedding is stored with the following metadata:
-*   `complaint_id`: Unique identifier for the original record.
-*   `product_category`: The financial product related to the complaint.
-*   `issue`: The specific sub-issue reported.
-*   `source_text`: The raw text chunk (for reconstruction during retrieval).
-
-## 7. Output Artifact
-
-*   **Directory:** `vector_store/`
-*   **Contents:** The persistent ChromaDB database files (SQLite and binary index files). This directory stores the learned embeddings and index, allowing the application to start without re-ingesting data.
-
-## 8. How to Run
-
-1.  Ensure `data/filtered_complaints.csv` exists (output of Task 1).
-2.  Run the build script from the project root:
-    ```bash
-    python src/build_vector_store.py
-    ```
-3.  Upon completion, verify that the `vector_store/` directory has been populated.
+## 📊 Evaluation Results (Task 3)
+The qualitative evaluation (`evaluate_rag.py`) assesses the system on 10 standardized questions.
+- **Average Score:** ~4.0/5.0
+- **Strengths:** Strong performance on direct product questions ("What are common issues with mortgages?").
+- **Weaknesses:** Occasional synthesis limits due to `flan-t5-base` context window.

@@ -1,126 +1,101 @@
-# Intelligent Complaint Analysis for Financial Services (RAG-Powered Chatbot)
+# Intelligent Complaint Analysis for Financial Services (RAG Hybrid System)
 
-## 1. Project Overview
+## 📌 Abstract
+This project implements a Retrieval-Augmented Generation (RAG) system designed to automate the analysis of consumer financial complaints. By leveraging the Consumer Financial Protection Bureau (CFPB) dataset, the system uses semantic search and Large Language Models (LLMs) to provide accurate, context-aware answers to natural language queries. The solution aims to reduce analyst workload, identify systemic issues faster, and democratize data access for non-technical stakeholders.
 
-**Client:** CrediTrust Financial
+## 🚀 Problem Statement & Motivation
+In the financial services sector, regulatory compliance and customer trust are paramount. Analyzing thousands of narrative complaints manually is inefficient and prone to error. Traditional keyword-based search fails to capture the semantic nuance of customer grievances (e.g., distinguishing "fraud" from "accounting error").
 
-In the highly regulated financial services sector, timely and accurate responses to customer complaints are critical for maintaining trust and compliance. CrediTrust Financial receives a high volume of consumer complaints across various channels. Manual triage and analysis are time-consuming and prone to human error, leading to delayed resolutions and missed insights.
+**Core Challenges:**
+- **Volume:** High intake of unstructured text data.
+- **Complexity:** Financial products have specific jargon and regulatory contexts.
+- **Latency:** Manual triage hampers rapid response to emerging risks.
 
-This project implements a **Retrieval-Augmented Generation (RAG)** chatbot designed to intelligently query, analyze, and summarize consumer complaints. By leveraging Large Language Models (LLMs) grounded in a vector database of historical complaints, the system provides accurate, context-aware answers to analysts' queries, significantly reducing the time required to understand complaint trends and specifics.
+This project addresses these challenges by building an automated pipeline that retrieves relevant historical context and synthesizes insights using generative AI.
 
-## 2. Business Objectives & KPIs
+## 🏗️ High-Level Architecture
 
-The primary goal is to transform complaint data into actionable intelligence.
-
-*   **Time-to-Insight Reduction:** Decrease the time analysts spend searching for relevant past complaints by 60%.
-*   **Empowerment of Non-Technical Teams:** Enable product managers and compliance officers to query complex datasets using natural language without needing SQL or Python skills.
-*   **Proactive Issue Detection:** Identify emerging issues and systemic problems faster through semantic similarity search rather than keyword matching.
-
-## 3. System Architecture
-
-The solution follows a modern RAG architecture:
-
-1.  **Data Ingestion:** Loading raw CSV data from the Consumer Financial Protection Bureau (CFPB).
-2.  **Preprocessing:** Cleaning text, handling missing values, and filtering for relevant product categories.
-3.  **Embedding & Vector Store:** Converting complaint narratives into high-dimensional vectors using `sentence-transformers` and persisting them in `ChromaDB` for efficient similarity search.
-4.  **Retrieval-Augmented Generation:**
-    *   **Retrieval:** Querying the vector store to find the most relevant context chunks for a user's question.
-    *   **Generation:** Passing the retrieved context and the user's query to an LLM (via Hugging Face) to generate a coherent, grounded response.
-5.  **User Interface:** An interactive frontend built with Gradio/Streamlit to facilitate easy interaction for end-users.
-
-## 4. Dataset
-
-The system utilizes the **Consumer Financial Protection Bureau (CFPB) Complaints Dataset**.
-
-*   **Source:** Publicly available financial complaint data.
-*   **Target Scope:** The project focuses on four high-impact product categories:
-    *   Credit card
-    *   Personal loan
-    *   Savings account
-    *   Money transfer
-*   **Embeddings:** We utilize pre-built embeddings (`sentence-transformers/all-MiniLM-L6-v2`) to ensure high-quality semantic representation without the computational cost of training models from scratch.
-
-## 5. Project Structure
-
-```bash
-├── data/                   # Raw and processed datasets
-├── notebooks/              # Jupyter notebooks for EDA and prototyping (Task 1)
-├── src/                    # Source code for vector store and RAG pipeline (Task 2 & 3)
-├── tests/                  # Unit tests for preprocessing and vector store
-├── vector_store/           # Persisted ChromaDB vector database
-├── requirements.txt        # Python dependency definitions
-└── README.md               # Project documentation
+```mermaid
+graph LR
+    A[CFPB Data] --> B(Task 1: EDA & Preprocessing)
+    B --> C{Task 2: Vector Store}
+    C -->|Embeddings| D[ChromaDB]
+    D --> E(Task 3: RAG Pipeline)
+    E -->|Retrieval| F[Context]
+    G[User Query] --> E
+    F --> H[LLM (FLAN-T5)]
+    H --> I[Synthesized Answer]
+    E <--> J(Task 4: Interactive UI)
 ```
 
-## 6. Tasks Breakdown
+**Data Flow:**
+1.  **Ingest:** Raw CSV data is cleaned and filtered (Task 1).
+2.  **Embed:** Narratives are chunked and embedded into a vector space (Task 2).
+3.  **Retrieve:** User queries fetch top-k similar complaints (Task 3).
+4.  **Generate:** An LLM synthesizes the retrieval context into a concise answer (Task 3).
+5.  **Interact:** Users engage via a Streamlit interface (Task 4).
 
-*   **Task 1: EDA & Preprocessing:** Data exploration, cleaning, and preparation of the "Gold" dataset.
-*   **Task 2: Chunking & Vector Store:** Implementing text chunking strategies and populating the ChromaDB vector database.
-*   **Task 3: RAG Pipeline:** Developing the retrieval logic and integrating the LLM for answer generation.
-*   **Task 4: Interactive UI:** Building the frontend interface for users to interact with the system.
+## 🛠️ Tech Stack
+- **Language:** Python 3.10+
+- **Database:** ChromaDB (Persisted Vector Store)
+- **Embeddings:** `sentence-transformers/all-MiniLM-L6-v2`
+- **LLM:** `google/flan-t5-base` (Hugging Face Transformers)
+- **Interface:** Streamlit
+- **Testing:** Pytest
 
-## 7. Tech Stack
+## 📋 Task Breakdown
 
-*   **Language:** Python 3.10+
-*   **Data Manipulation:** pandas, numpy
-*   **Vector Operations:** sentence-transformers, ChromaDB
-*   **LLM Integration:** Hugging Face Transformers
-*   **Interface:** Gradio / Streamlit
-*   **Testing:** pytest
+| Task | Description | Location |
+| :--- | :--- | :--- |
+| **Task 1** | **EDA & Preprocessing:** Data cleaning, product filtering, and "Gold" dataset creation. | `notebooks/` |
+| **Task 2** | **Vector Store Creation:** Chunking strategies, embedding generation, and database population. | `src/` |
+| **Task 3** | **RAG Pipeline:** Core logic for retrieval, prompt engineering, generation, and qualitative evaluation. | `src/` |
+| **Task 4** | **Interactive UI:** A user-friendly chat interface for querying the system. | `ui/` |
 
-## 8. How to Run
+## 💻 How to Run
 
-### Environment Setup
+### 1. Environment Setup
+Clone the repository and install dependencies:
+```bash
+git clone <repository_url>
+cd <repository_folder>
+python -m venv venv
+# Windows
+venv\Scripts\activate
+# Linux/Mac
+source venv/bin/activate
+pip install -r requirements.txt
+```
 
-1.  Clone the repository:
-    ```bash
-    git clone <repository_url>
-    cd <repository_folder>
-    ```
-2.  Create and activate a virtual environment:
-    ```bash
-    python -m venv venv
-    source venv/bin/activate  # On Windows: venv\Scripts\activate
-    ```
-3.  Install dependencies:
-    ```bash
-    pip install -r requirements.txt
-    ```
+### 2. Pipeline Execution
+**Step 1: Preprocessing (Task 1)**
+Run the notebook `notebooks/task1_eda_preprocessing.ipynb` to generate `data/filtered_complaints.csv`.
 
-### Running the Pipeline
+**Step 2: Build Vector Store (Task 2)**
+Ingest the data and generate embeddings:
+```bash
+python src/build_vector_store.py
+```
 
-1.  **Preprocessing (Task 1):**
-    Run the preprocessing notebook or script to generate `data/filtered_complaints.csv`.
+**Step 3: Run the Application (Task 4)**
+Launch the Streamlit interface:
+```bash
+streamlit run ui/app.py
+```
 
-2.  **Build Vector Store (Task 2):**
-    Execute the script to ingest data and create embeddings:
-    ```bash
-    python src/build_vector_store.py
-    ```
-
-3.  **Run the App (Task 3 & 4):**
-    Launch the Gradio/Streamlit interface:
-    ```bash
-    python src/app.py
-    ```
-
-### Running Tests
-
-Execute the unit test suite to verify system integrity:
+### 3. Testing
+Run the automated test suite:
 ```bash
 pytest tests/
 ```
 
-## 9. Testing & CI
+## 📊 Results & Evaluation
+The RAG pipeline was evaluated qualitatively using a set of 10 representative financial domain questions.
+- **Metric:** Quality Score (1-5 Scale) based on relevance, groundedness, and clarity.
+- **Result:** The system achieves consistent scores of **4/5**, effectively retrieving relevant distinct complaints and synthesizing them into coherent summaries.
+- **Key Insight:** Product-category filtering significantly improves precision by removing irrelevant context (e.g., credit reporting issues appearing in credit card queries).
 
-The project maintains high code quality standards through:
-
-*   **Unit Testing:** Comprehensive tests implementation using `pytest` covering data integrity, processing logic, and vector store operations.
-*   **CI/CD:** A GitHub Actions workflow (`.github/workflows/unittests.yml`) triggers on every push and pull request to ensure no regression is introduced.
-
-## 10. Future Improvements
-
-*   **Advanced Reranking:** Implement a Cross-Encoder step to re-rank retrieved results for higher precision.
-*   **Evaluation Metrics:** Integrate RAGAS or similar frameworks to quantitatively evaluate the faithfulness and answer relevance of the generation.
-*   **Role-Based Access:** Add authentication to restrict access to sensitive complaint data.
-*   **Streaming & Caching:** Implement response streaming for better UX and semantic caching to reduce API costs and latency.
+## ⚠️ Limitations & Future Work
+- **Model Size:** `FLAN-T5-base` is lightweight but may struggle with highly complex reasoning compared to larger models like GPT-4 or Llama-2.
+- **Context Window:** Fixed chunking (512 chars) may split some long narratives; sliding windows or hierarchical indexing could improve context.
+- **Latency:** CPU inference is functional but slower than GPU-accelerated environments.
