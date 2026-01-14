@@ -456,6 +456,7 @@ Generate the synthesized analysis now:
         # Create prompt with improved template
         prompt = self.create_prompt(question, retrieved_docs)
         
+        
         # Tokenize input
         inputs = self.tokenizer(
             prompt,
