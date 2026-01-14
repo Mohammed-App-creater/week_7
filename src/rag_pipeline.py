@@ -413,11 +413,7 @@ You must reason ACROSS excerpts to identify shared patterns.
 USER QUESTION:
 {question}
 
-RESPONSE FORMAT (MANDATORY):
-1. <Generalized billing issue or pattern>
-2. <Generalized billing issue or pattern>
-3. <Generalized billing issue or pattern>
-(optional 4–7)
+   
 
 Generate the synthesized analysis now:
 """

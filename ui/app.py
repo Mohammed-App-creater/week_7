@@ -69,9 +69,11 @@ def clear_conversation():
     st.session_state.messages = []
 
 
+
 # ==========================================
 # UI Layout
 # ==========================================
+
 
 # Sidebar
 with st.sidebar:
@@ -111,7 +113,17 @@ with st.sidebar:
     """)
 
 # Main Content
-st.title("🔍 CFPB Complaint Assistant")
+col1, col2 = st.columns([6, 1])
+with col1:
+    st.title("🔍 CFPB Complaint Assistant")
+with col2:
+    # Add vertical spacing to align button
+    st.write("")
+    st.write("")
+    if st.button("Clear", key="clear_main_chat"):
+        clear_conversation()
+        st.rerun()
+
 st.markdown("Ask questions about consumer financial complaints.")
 
 # Load Pipeline on Startup
