@@ -413,7 +413,7 @@ You must reason ACROSS excerpts to identify shared patterns.
 USER QUESTION:
 {question}
 
-
+   
 
 Generate the synthesized analysis now:
 """
